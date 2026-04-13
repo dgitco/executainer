@@ -2,7 +2,7 @@
 name = "executainer"
 version = "0.1.0"
 edition = "2024"
-description = "CLI-first trusted parallel delegation for terminal power users"
+description = "Execution layer for agents that need to stay on track"
 license = "MIT"
 
 [dependencies]

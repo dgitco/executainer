@@ -1,3 +1,6 @@
 /target
 /tmp
 .DS_Store
+
+# Internal product planning docs
+PRD.md
