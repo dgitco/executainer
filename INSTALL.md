@@ -1,8 +1,6 @@
 # INSTALL
 
-This is the bootstrap source of truth for `executainer`.
-
-`executainer` is the execution layer for agents that need to stay on track. The install path is intentionally boring. That is a feature.
+This is the source of truth for getting `executainer` running.
 
 ## Requirements
 
@@ -10,9 +8,7 @@ This is the bootstrap source of truth for `executainer`.
 - `tmux`
 - Codex CLI available as `codex`
 
-## Preflight
-
-Verify the operator environment before you install anything:
+Check them first:
 
 ```bash
 rustc --version
@@ -21,27 +17,57 @@ tmux -V
 codex --help
 ```
 
-If one of these fails, stop there and fix it first. Do not debug agent lanes on top of a broken base environment.
+If one of those fails, fix that first. `executainer` is intentionally small, so most install trouble is really environment trouble.
 
-## Install
+## Install From Release
 
-Use one path only:
+Release archives are published at:
+
+<https://github.com/dgitco/executainer/releases/latest>
+
+Choose the archive for your platform, unpack it, and put `executainer` on your `PATH`.
+
+Example:
+
+```bash
+tar -xzf executainer-<platform>.tar.gz
+chmod +x executainer
+mv executainer /usr/local/bin/executainer
+```
+
+## Install From Source
+
+Install directly from Git:
+
+```bash
+cargo install --git https://github.com/dgitco/executainer
+```
+
+Or, if you prefer a local checkout:
 
 ```bash
 cargo install --path .
 ```
 
-## First Run
+## First-Run Verification
 
-Run the environment check before starting any delegation work:
+Run:
 
 ```bash
 executainer doctor
 ```
 
-`doctor` is the first-run guardrail. If it reports failing checks, fix those first.
+Healthy output should report these checks as ready:
 
-## Then Run Something Real
+- runtime
+- `tmux`
+- `codex_cli`
+- writable temp dir
+- parser self-check
+
+If `doctor` fails, do not debug lane behavior yet. Fix the environment first.
+
+## First Useful Command
 
 Once `doctor` is green:
 
@@ -49,9 +75,16 @@ Once `doctor` is green:
 executainer run --lanes 3 --task "Audit this repository for risky coupling."
 ```
 
-That gives you the real workflow immediately:
+Then inspect the run:
 
-- isolated lanes
-- visible execution through `tmux`
-- deterministic run artifacts
-- a thin operator loop instead of one giant polluted session
+```bash
+executainer inspect <run-slug>
+```
+
+## Known v1 Boundaries
+
+- `tmux` is the only operator backend
+- release binaries do not remove the need for local `tmux` and Codex
+- writable lanes are intentionally human-visible and can block synthesis
+
+That is not accidental. v1 is optimizing for trust and operator control, not magic.

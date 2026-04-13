@@ -4,6 +4,12 @@ version = "0.1.0"
 edition = "2024"
 description = "Execution layer for agents that need to stay on track"
 license = "MIT"
+repository = "https://github.com/dgitco/executainer"
+homepage = "https://github.com/dgitco/executainer"
+readme = "README.md"
+keywords = ["agents", "cli", "codex", "tmux", "orchestration"]
+categories = ["command-line-utilities", "development-tools"]
+rust-version = "1.85"
 
 [dependencies]
 chrono = { version = "0.4.42", features = ["serde"] }

@@ -1,0 +1,25 @@
+name: Feature request
+description: Suggest a concrete improvement to executainer
+title: "[feature] "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What painful workflow are you trying to improve?
+      description: Start with the operator problem, not the proposed abstraction.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: What should executainer do?
+    validations:
+      required: true
+  - type: textarea
+    id: tradeoffs
+    attributes:
+      label: Tradeoffs
+      description: What does this add in complexity, operator burden, or trust risk?

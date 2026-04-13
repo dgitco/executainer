@@ -1,0 +1,31 @@
+name: Bug report
+description: Report a reproducible problem in executainer
+title: "[bug] "
+labels:
+  - bug
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the bug and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Include the exact command, environment, and steps.
+      placeholder: |
+        1. Run `executainer ...`
+        2. Inspect `tmp/executainer/...`
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Rust version, tmux version, Codex CLI version
+    validations:
+      required: true

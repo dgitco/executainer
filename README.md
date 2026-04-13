@@ -1,144 +1,146 @@
 # executainer
 
-For agents that get lost, overread, and burn tokens like it's free.
+`executainer` is a Rust CLI for running agent work in isolated lanes instead of one giant shared context.
 
-Executainer is the execution layer for agents that need to stay on track.
+It is for the person who already knows the painful manual version:
 
-Give each agent a clean execution environment, keep context short, and make long refactors navigable.
+- open another session
+- restate the task
+- copy just enough context over
+- keep lane notes somewhere else
+- hope the workers do not step on each other
 
-## What It Is
+`executainer` turns that into a repeatable workflow with visible panes, deterministic run artifacts, and a hard stop when lane output is ambiguous.
 
-`executainer` is a CLI-first execution layer for running agent work in isolated lanes instead of dumping one giant codebase, one giant context window, and one giant problem onto a single session.
+## Who This Is For
 
-It is for people who already know the painful manual version of this workflow. Open another session. Split the task again. Copy context over. Keep notes somewhere else. Try not to lose the thread. Do that 80 times in a week and software starts to feel absurd.
+The sharpest v1 user is an engineer running long or high-risk agent work where shared context makes results worse.
 
-Executainer turns that into a repeatable system.
+Good first workflows:
+
+- parallel repository audits
+- adversarial reviews from multiple viewpoints
+- migration planning with isolated read-only lanes
+- implementation handoffs where writable work needs human visibility
+
+If you want a giant all-knowing control plane, this is not that.
 
 ## Why It Exists
 
-Most agent tooling still assumes the answer is a bigger harness, a fancier planner, or more shared context.
+Most agent tools still assume the answer is more shared context.
 
-That works right up until it doesn't.
+That works until every worker sees too much, overreads, drifts, repeats work, and starts sounding confident about the wrong thing.
 
-When every agent sees too much, they overread, drift, repeat work, import irrelevant context, and burn tokens on the wrong problem. Planning gets biased by whichever context blob was loaded last. Audits get contaminated by implementation details they should not have seen. Large refactors stop being engineering and start becoming session babysitting.
+`executainer` takes the opposite bet:
 
-Executainer takes the opposite approach:
+- keep each lane bounded
+- keep the orchestrator thin
+- trust recorded evidence
+- block on ambiguity instead of smoothing it over
 
-- isolate the work
-- keep the goal sharp
-- keep the context short
-- record the evidence
-- let the orchestrator stay thin
+## What v1 Does Today
 
-That is the whole game.
+- runs read-only delegation lanes with `codex exec`
+- uses `tmux` as the operator visibility layer
+- supports explicit writable lanes for human-supervised work
+- archives prompts, pane captures, outputs, and a deterministic `manifest.json`
+- blocks synthesis when parsing fails or lanes collide on proposed files
 
-## Why This Architecture Wins
+## What It Does Not Do
 
-### More objective planning and audits
+Not in v1:
 
-Planning and review work gets stronger when multiple lanes can evaluate the same system from different directions without sharing contaminated context. That lowers bias, produces cleaner disagreement, and makes it easier to compare conclusions instead of averaging mush.
+- full sandbox isolation
+- automatic approval classification
+- non-`tmux` backends
+- hosted orchestration
 
-### Better implementation accuracy
+Those are future directions, not hidden promises.
 
-Implementation quality goes up when work is broken into smaller, explicit pieces with clearer boundaries. Agents do better when they can hold the real task in context instead of swimming through unrelated files and previous reasoning.
+## Install
 
-### Lower token burn
+The full install guide lives in [INSTALL.md](https://raw.githubusercontent.com/dgitco/executainer/main/INSTALL.md).
 
-The orchestrator does not need to carry the full implementation state of every lane. It only needs enough context to assign work, inspect evidence, detect collisions, and decide what happens next. That keeps the central session cheap, stable, and easier to steer.
+Fast paths:
 
-### Better long-running navigation
-
-Large migrations and refactors fail when the system loses its place. Executainer is built to keep the work navigable over time, not just impressive in a single demo run.
-
-## Where It Shines
-
-Executainer is useful on small tasks too. You can save time, save tokens, and keep the goal cleaner even on modest audits or short implementation bursts.
-
-But its real edge shows up when the work gets long, large, or weird:
-
-- multi-step database refactors
-- subsystem migrations
-- adversarial audits
-- planning from multiple viewpoints
-- repository-wide cleanup work
-- high-risk changes where context drift quietly destroys correctness
-
-This execution style has already been used to drive large refactors across massive codebases, including long-running financial-platform work, physical computing coding platforms, and database redesign efforts that would otherwise require hundreds of manually managed sessions.
-
-## What v1 Does
-
-- Runs read-only delegation lanes with `codex exec`
-- Uses `tmux` as the visibility and operator-control substrate
-- Separates writable work into explicit opt-in interactive lanes
-- Archives prompts, captures, outputs, and a deterministic `manifest.json`
-- Stops before synthesis when parse failures or conflicting file proposals show up
-
-## How It Works
-
-### 1. Keep lanes isolated
-
-Each lane gets a bounded job. Not a vibe. Not a giant shared brainstorm. A bounded job.
-
-### 2. Keep the orchestrator thin
-
-The main session should not become a giant memory dump. It should coordinate, inspect, compare, and decide. That separation is what keeps large runs steerable.
-
-### 3. Trust evidence, not theater
-
-Executainer records prompts, pane captures, lane outputs, and the run contract in a deterministic archive. Raw output is evidence. Parsed sentinels are the trusted interface.
-
-### 4. Block on ambiguity
-
-If parsing fails or multiple lanes propose the same file, synthesis stops. Not glamorous. Very important.
-
-## Why Not The Usual Agent Stack
-
-Executainer is not trying to be a full-stack harness for everything.
-
-It is not trying to become the center of your entire development environment.
-
-It is not trying to win by owning more orchestration logic than necessary.
-
-The point is simpler:
-
-Give agents the minimum execution structure they need to stay accurate at scale.
-
-That means fewer magical abstractions, fewer giant shared contexts, less orchestration bloat, and a much clearer line between coordination and execution.
-
-## Public CLI
+1. Download a release binary from [GitHub Releases](https://github.com/dgitco/executainer/releases/latest)
+2. Install directly from Git:
 
 ```bash
-executainer doctor
-executainer run --lanes 3 --task "Audit this repository for risky coupling."
-executainer inspect <run-slug>
-executainer clean <run-slug> --yes
+cargo install --git https://github.com/dgitco/executainer
 ```
 
-## Agent-First Install
-
-Fetch and follow instructions from `<raw INSTALL.md URL>`.
-
-That is the default onboarding path. `INSTALL.md` is the source of truth for bootstrap and first-run verification.
-
-## Manual Install Fallback
-
-If you are not using the agent-first path, install Rust, `tmux`, and the Codex CLI, then:
+3. Or install from local source:
 
 ```bash
 cargo install --path .
+```
+
+## First Run
+
+Verify the local environment:
+
+```bash
 executainer doctor
 ```
 
-## Future Direction
+Expected healthy checks:
 
-The long-term direction is not "more magic." It is better execution infrastructure.
+- runtime
+- `tmux`
+- `codex_cli`
+- writable temp dir
+- parser self-check
 
-That includes:
+Then run a real task:
 
-- stronger isolation than v1
-- more deliberate approval handling
-- live markdown knowledge sync for compact-safe orchestration
-- operator interrupts and mid-run correction flows
-- lightweight ways to ask, redirect, or clarify without polluting the main control context
+```bash
+executainer run --lanes 3 --task "Audit this repository for risky coupling."
+```
 
-In other words, agents that can stay precise for a very long time without turning the whole run into context soup.
+Inspect the result:
+
+```bash
+executainer inspect <run-slug>
+```
+
+Clean it up:
+
+```bash
+executainer clean <run-slug> --yes
+```
+
+## Example Run
+
+See [docs/sample-run.md](docs/sample-run.md) for a concrete walkthrough and what the output artifacts look like.
+
+## Release Trust
+
+This repo is meant to be boring in the right places.
+
+- CI runs formatting, linting, tests, and build checks
+- tagged releases publish release archives and checksums
+- docs call out the real support boundary instead of pretending v1 is more complete than it is
+
+## Support Matrix
+
+Current release target:
+
+- macOS via release binary or source build
+- Linux via release binary or source build
+- local `tmux`
+- local Codex CLI available as `codex`
+
+If your machine already has Rust, `tmux`, and Codex, time to first useful run should be under 5 minutes.
+
+## Troubleshooting
+
+Common issues and operator mistakes live in [docs/troubleshooting.md](docs/troubleshooting.md).
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Security
+
+See [SECURITY.md](SECURITY.md).
