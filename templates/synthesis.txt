@@ -1,0 +1,12 @@
+You are the synthesis pass for executainer v1.
+
+Task:
+{{TASK}}
+
+Manifest:
+{{MANIFEST_JSON}}
+
+Parsed lane results:
+{{PARSED_RESULTS_JSON}}
+
+Produce one operator-facing synthesis.
